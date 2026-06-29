@@ -1,43 +1,31 @@
 pipeline {
-    agent {
-        docker {
-            image 'maven:3.9-eclipse-temurin-17'
-            args ''
-        }
+    agent any
+
+    environment {
+        IMAGE_NAME = "my-java-app"
+        TAG = "latest"
     }
 
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
-                echo '✅ Code successfully pulled from GitHub!'
             }
         }
 
-        stage('Build & Test') {
+        stage('Build & Test (Maven)') {
             steps {
+                echo 'Building the application with Maven...'
+                sh './mvnw clean package -DskipTests'
 
-                dir('my-app') {
-                    echo 'Building Maven project...'
-                    sh 'mvn clean package -DskipTests' // اضافه کردن skipTests برای سرعت بیشتر در تست اول
-                }
             }
         }
 
-        stage('Archive Artifacts') {
+        stage('Build Docker Image') {
             steps {
-                // پیدا کردن فایل JAR که ساخته شده
-                archiveArtifacts artifacts: 'my-app/target/*.jar', fingerprint: true
+                echo 'Building the Docker Image...'
+                sh "docker build -t ${IMAGE_NAME}:${TAG} ."
             }
         }
-    }
 
-    post {
-        success {
-            echo '🎉 YES! Build Successful, Lili! Your code is safe in GitHub and built perfectly!'
-        }
-        failure {
-            echo '❌ Oh no! Something went wrong. Check the logs.'
-        }
-    }
-}
+        stage('Verify
