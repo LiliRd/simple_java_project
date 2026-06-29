@@ -16,11 +16,12 @@ pipeline {
         stage('Build with Maven Container') {
             steps {
                 echo 'Building the application using a Maven Docker Container...'
-                // اینجا ما از یک کانتینر موقت Maven استفاده می‌کنیم!
-                // این دستور فایل‌های پروژه را به کانتینر وصل می‌کند (mount) و دستور build را اجرا می‌کند
-                sh 'docker run --rm -v "$(pwd)":/usr/src/app -w /usr/src/app maven:3.8.5-openjdk-17 mvn clean package -DskipTests'
+                // تغییر اصلی: استفاده از ${WORKSPACE} به جای $(pwd)
+                // همچنین از یک روش مستقیم‌تر برای آدرس‌دهی استفاده می‌کنیم
+                sh "docker run --rm -v ${WORKSPACE}:/usr/src/app -w /usr/src/app maven:3.8.5-openjdk-17 mvn clean package -DskipTests"
             }
         }
+
 
         stage('Build Docker Image') {
             steps {
