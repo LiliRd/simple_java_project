@@ -18,17 +18,24 @@ pipeline {
 			}
 		}
 
-		
+			
 		stage('Build') {
 			steps {
-			sh 'mvn clean compile'
+			sh '''
+			mvn \
+			-Dmaven.repo.local=/var/jenkins_home/.m2/repository \
+			clean compile
+			'''
 			}
 		}
 
-		
 		stage('Run Unit Tests') {
 			steps {
-			sh 'mvn test'
+			sh '''
+			mvn \
+			-Dmaven.repo.local=/var/jenkins_home/.m2/repository \
+			test
+			'''
 			}
 
 			post {
@@ -36,13 +43,17 @@ pipeline {
 			junit 'target/surefire-reports/*.xml'
 			}
 			}
-		}		
-
+		}				
+		
 		stage('Package') {
 			steps {
-			sh 'mvn package -DskipTests'
+			sh '''
+			mvn \
+			-Dmaven.repo.local=/var/jenkins_home/.m2/repository \
+			package -DskipTests
+			'''
 			}
-		}
+		}		
 
 
 		stage('Build Docker Image') {
