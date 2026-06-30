@@ -10,7 +10,7 @@ class AppTest {
     void shouldAddNumbers() {
 
         int result = App.add(2,3);
-
+    
         assertEquals(5,result);
 
     }

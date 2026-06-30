@@ -2,9 +2,9 @@ pipeline {
 	agent any
 
 	options {
-		timestamps()
-		ansiColor('xterm')
-	}
+        timestamps()
+        ansiColor('xterm')
+    }
 
 	environment {
 		IMAGE_NAME = "lirahmani/my-portfolio"
