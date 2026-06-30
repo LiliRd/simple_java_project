@@ -18,17 +18,11 @@ checkout scm
 
 
 stage('Build & Test') {
-agent {
-docker {
-image 'maven:3.8.5-openjdk-17'
-reuseNode true
-}
-}
-
 steps {
 sh 'mvn clean verify'
 }
 }
+
 
 stage('Build Docker Image') {
 steps {
