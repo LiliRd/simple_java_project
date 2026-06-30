@@ -14,40 +14,16 @@ checkout scm
 }
 }
 
+stage('Build') {
+agent {
+docker {
+image 'maven:3.8.5-openjdk-17'
+reuseNode true
+}
+}
 
-stage('Debug') {
 steps {
 sh '''
-pwd
-ls -R
-'''
-}
-}
-
-stage('Inspect Workspace') {
-steps {
-sh '''
-echo "Current directory:"
-pwd
-
-echo "Workspace contents:"
-ls -la
-
-echo "Find pom.xml:"
-find . -name pom.xml
-'''
-}
-}
-
-stage('Build with Maven Container') {
-steps {
-echo 'Building application inside a temporary Maven container...'
-
-sh '''
-docker run --rm \
--v "$WORKSPACE":/usr/src/app \
--w /usr/src/app \
-maven:3.8.5-openjdk-17 \
 mvn clean package
 '''
 }
@@ -55,20 +31,15 @@ mvn clean package
 
 stage('Build Docker Image') {
 steps {
-echo 'Building Docker image...'
-
 sh """
 docker build \
--t ${IMAGE_NAME}:${TAG} \
-.
+-t ${IMAGE_NAME}:${TAG} .
 """
 }
 }
 
-stage('Verify Docker Image') {
+stage('Verify Image') {
 steps {
-echo 'Verifying Docker image...'
-
 sh """
 docker image inspect ${IMAGE_NAME}:${TAG}
 """
@@ -77,7 +48,6 @@ docker image inspect ${IMAGE_NAME}:${TAG}
 }
 
 post {
-
 success {
 echo '🎉 Pipeline completed successfully!'
 }
@@ -91,4 +61,3 @@ echo '🧹 Pipeline finished.'
 }
 }
 }
-
