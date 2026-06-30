@@ -1,0 +1,9 @@
+umsadmin@LiLiRD:~$ sudo snap install ngrok
+ngrok (v3/stable) 3.39.7 from Ngrok (ngrok-publisher) installed
+
+
+umsadmin@LiLiRD:~$ ngrok config add-authtoken 3FqcSRmbhdeZlNzzJWFnAv2OdQ4_3to5ysgcy6jr2W32ZVMeK
+Authtoken saved to configuration file: /home/umsadmin/snap/ngrok/409/.config/ngrok/ngrok.yml
+
+
+ngrok config add-authtoken 3FqcSRmbhdeZlNzzJWFnAv2OdQ4_3to5ysgcy6jr2W32ZVMeK

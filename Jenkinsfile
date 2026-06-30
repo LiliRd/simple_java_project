@@ -1,60 +1,109 @@
 pipeline {
-agent any
+	agent any
+
+	options {
+		timestamps()
+		ansiColor('xterm')
+	}
+
+	environment {
+		IMAGE_NAME = "lirahmani/my-portfolio"
+		TAG = "${BUILD_NUMBER}"
+	}
+
+	stages {
+			stage('Checkout') {
+			steps {
+			checkout scm
+			}
+		}
+
+		
+		stage('Build') {
+			steps {
+			sh 'mvn clean compile'
+			}
+		}
+
+		stage('Run Unit Tests') {
+			steps {
+			sh 'mvn test'
+			}
+		}
+
+		stage('Package') {
+			steps {
+			sh 'mvn package -DskipTests'
+			}
+		}
 
 
-environment {
-IMAGE_NAME = "lilird/my-java-app"
-TAG = "${BUILD_NUMBER}"
-}
+		stage('Build Docker Image') {
+			steps {
+			echo '🐳 Building Docker image...'
 
-stages {
+			sh """
+			docker build \
+			-t ${IMAGE_NAME}:${TAG} \
+			-t ${IMAGE_NAME}:latest \
+			.
+			"""
+			}
+		}	
 
-stage('Checkout') {
-steps {
-checkout scm
-}
-}
+		stage('Verify Image') {
+			steps {
+			sh """
+			docker image inspect ${IMAGE_NAME}:${TAG}
+			"""
+			}
+			}
+			
 
+		stage('Push Docker Image') {
+			steps {
+			echo '📤 Pushing Docker image to Docker Hub...'
 
+			withCredentials([
+			usernamePassword(
+			credentialsId: 'dockerhub',
+			usernameVariable: 'DOCKER_USER',
+			passwordVariable: 'DOCKER_PASS'
+			)
+			]) {
+			sh """
+			echo "\$DOCKER_PASS" | docker login \
+			-u "\$DOCKER_USER" \
+			--password-stdin
 
-stage('Build & Test') {
-steps {
-sh 'mvn clean verify'
-}
-}
+			docker push ${IMAGE_NAME}:${TAG}
 
+			docker push ${IMAGE_NAME}:latest
 
-stage('Build Docker Image') {
-steps {
-sh """
-docker build \
--t ${IMAGE_NAME}:${TAG} .
-"""
-}
-}
+			docker logout
+			"""
+			}
+			}
+		}			
+	}
 
-stage('Verify Image') {
-steps {
-sh """
-docker image inspect ${IMAGE_NAME}:${TAG}
-"""
-}
-}
-}
+	post {
+		success {
+		echo '🎉 Pipeline completed successfully!'
 
-post {
-success {
-echo '🎉 Pipeline completed successfully!'
+		archiveArtifacts artifacts: 'target/*.jar', fingerprint:true
+		}
 
-archiveArtifacts artifacts: 'my-app/target/*.jar'
-}
+		failure {
+		echo '❌ Pipeline failed.'
+		}
 
-failure {
-echo '❌ Pipeline failed.'
-}
-
-always {
-echo '🧹 Pipeline finished.'
-}
-}
+		always {
+		sh """
+		docker image rm ${IMAGE_NAME}:${TAG} || true
+		docker image rm ${IMAGE_NAME}:latest || true
+		"""
+		echo '🧹 Pipeline finished.'
+		}
+	}
 }
