@@ -14,6 +14,31 @@ checkout scm
 }
 }
 
+
+stage('Debug') {
+steps {
+sh '''
+pwd
+ls -R
+'''
+}
+}
+
+stage('Inspect Workspace') {
+steps {
+sh '''
+echo "Current directory:"
+pwd
+
+echo "Workspace contents:"
+ls -la
+
+echo "Find pom.xml:"
+find . -name pom.xml
+'''
+}
+}
+
 stage('Build with Maven Container') {
 steps {
 echo 'Building application inside a temporary Maven container...'
