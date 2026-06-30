@@ -39,9 +39,18 @@ pipeline {
 			}
 
 			post {
-			always {
-			junit 'target/surefire-reports/*.xml'
-			}
+				always {
+				junit 'target/surefire-reports/*.xml'
+
+				publishHTML([
+				allowMissing: false,
+				alwaysLinkToLastBuild: true,
+				keepAll: true,
+				reportDir: 'target/site/jacoco',
+				reportFiles: 'index.html',
+				reportName: 'JaCoCo Coverage Report'
+				])
+				}			
 			}
 		}				
 		
@@ -123,5 +132,6 @@ pipeline {
 		"""
 		echo '🧹 Pipeline finished.'
 		}
+				
 	}
 }
