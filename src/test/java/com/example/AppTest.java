@@ -4,13 +4,12 @@ package com.example;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class AppTest {
+public class AppTest {
 
+    App myApp=new App();
     @Test
     void shouldAddNumbers() {
-
-        int result = App.add(2,3);
-    
+        int result = myApp.add(2,3);
         assertEquals(5,result);
 
     }
