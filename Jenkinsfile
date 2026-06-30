@@ -1,9 +1,10 @@
 pipeline {
 agent any
 
+
 environment {
-IMAGE_NAME = "my-java-app"
-TAG = "latest"
+IMAGE_NAME = "lilird/my-java-app"
+TAG = "${BUILD_NUMBER}"
 }
 
 stages {
@@ -14,7 +15,9 @@ checkout scm
 }
 }
 
-stage('Build') {
+
+
+stage('Build & Test') {
 agent {
 docker {
 image 'maven:3.8.5-openjdk-17'
@@ -23,9 +26,7 @@ reuseNode true
 }
 
 steps {
-sh '''
-mvn clean package
-'''
+sh 'mvn clean verify'
 }
 }
 
@@ -50,6 +51,8 @@ docker image inspect ${IMAGE_NAME}:${TAG}
 post {
 success {
 echo '🎉 Pipeline completed successfully!'
+
+archiveArtifacts artifacts: 'my-app/target/*.jar'
 }
 
 failure {
