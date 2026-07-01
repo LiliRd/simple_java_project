@@ -111,7 +111,22 @@ pipeline {
 			"""
 			}
 			}
-		}			
+		}
+
+		stage('Deploy to Kubernetes') {
+			steps {
+			echo '☸️ Deploying to Kubernetes...'
+
+			sh """
+			kubectl apply -f k8s/
+
+			kubectl set image deployment/my-portfolio \
+			my-portfolio=${IMAGE_NAME}:${TAG}
+
+			kubectl rollout status deployment/my-portfolio --timeout=120s
+			"""
+			}
+		}		
 	}
 
 	post {
