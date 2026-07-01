@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class AppController {
+
+
     @GetMapping("/hello/{name}")
     public ResponseEntity<Double> getCurrentTemperature(@PathVariable String name) {
         try {
