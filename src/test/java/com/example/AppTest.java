@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AppTest {
 
-    App myApp=new App();
+    AppService myApp=new AppService();
     @Test
     void shouldAddNumbers() {
         int result = myApp.add(2,3);
