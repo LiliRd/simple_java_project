@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+    name: my-portfolio
+
+spec:
+    replicas: 2
+
+    selector:
+        matchLabels:
+            app: my-portfolio
+
+    template:
+        metadata:
+            labels:
+                app: my-portfolio
+
+        spec:
+            containers:
+                - name: my-portfolio
+                  image: lirahmani/my-portfolio:latest
+                  imagePullPolicy: Always
+                  ports:
+                     - containerPort: 9095
+                  resources:
+                    requests:
+                        memory: "256Mi"
+                        cpu: "250m"
+                    limits:
+                        memory: "512Mi"
+                        cpu: "500m"                     
+                  readinessProbe:
+                    httpGet:
+                        path: /actuator/health/readiness
+                        port: 9095
+                    initialDelaySeconds: 10
+                    periodSeconds: 5
+
+                  livenessProbe:
+                    httpGet:
+                        path: /actuator/health/liveness
+                        port: 9095
+                    initialDelaySeconds: 30
+                    periodSeconds: 10
