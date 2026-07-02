@@ -12,58 +12,44 @@ pipeline {
 	}
 
 	stages {
-			stage('Checkout') {
+		
+		stage('Checkout') {
 			steps {
 			checkout scm
 			}
 		}
 
 			
-		stage('Build') {
+		stage('Build & Verify') {
 			steps {
 			sh '''
 			mvn \
 			-Dmaven.repo.local=/var/jenkins_home/.m2/repository \
-			clean compile
-			'''
-			}
-		}
-
-		stage('Run Unit Tests') {
-			steps {
-			sh '''
-			mvn \
-			-Dmaven.repo.local=/var/jenkins_home/.m2/repository \
-			test
+			clean verify
 			'''
 			}
 
 			post {
-				always {
-				junit 'target/surefire-reports/*.xml'
+			always {
+			junit 'target/surefire-reports/*.xml'
 
-				publishHTML([
-				allowMissing: false,
-				alwaysLinkToLastBuild: true,
-				keepAll: true,
-				reportDir: 'target/site/jacoco',
-				reportFiles: 'index.html',
-				reportName: 'JaCoCo Coverage Report'
-				])
-				}			
+			publishHTML([
+			allowMissing: false,
+			alwaysLinkToLastBuild: true,
+			keepAll: true,
+			reportDir: 'target/site/jacoco',
+			reportFiles: 'index.html',
+			reportName: 'JaCoCo Coverage Report'
+			])
 			}
-		}				
-		
+			}
+		}
+
 		stage('Package') {
 			steps {
-			sh '''
-			mvn \
-			-Dmaven.repo.local=/var/jenkins_home/.m2/repository \
-			package -DskipTests
-			'''
+			echo '📦 Artifact already packaged during verify.'
 			}
-		}		
-
+		}
 
 		stage('Build Docker Image') {
 			steps {
