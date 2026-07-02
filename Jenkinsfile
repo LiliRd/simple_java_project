@@ -6,11 +6,12 @@ pipeline {
         // ansiColor('xterm')
     }
 
-	environment {
-		IMAGE_NAME = "lirahmani/my-portfolio"
-		TAG = "${BUILD_NUMBER}"
-	}
 
+	environment {
+	IMAGE_NAME = "lirahmani/my-portfolio"
+	TAG = "${BUILD_NUMBER}"
+	KUBECONFIG = "/var/jenkins_home/.kube/config"
+	}
 	stages {
 		
 		stage('Checkout') {
@@ -98,21 +99,27 @@ pipeline {
 			}
 			}
 		}
+	
 
 		stage('Deploy to Kubernetes') {
 			steps {
-			echo '☸️ Deploying to Kubernetes...'
+			sh '''
+			echo "KUBECONFIG=$KUBECONFIG"
 
-			sh """
+			kubectl config current-context
+
+			kubectl get nodes
+
 			kubectl apply -f k8s/
 
 			kubectl set image deployment/my-portfolio \
 			my-portfolio=${IMAGE_NAME}:${TAG}
 
 			kubectl rollout status deployment/my-portfolio --timeout=120s
-			"""
+			'''
 			}
-		}		
+		}
+		
 	}
 
 	post {
