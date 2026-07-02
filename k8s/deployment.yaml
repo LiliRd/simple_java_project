@@ -35,7 +35,7 @@ spec:
               path: /actuator/health/liveness
               port: 9095
             periodSeconds: 5
-            failureThreshold: 12
+            failureThreshold: 24
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness

@@ -115,7 +115,7 @@ pipeline {
 			kubectl set image deployment/my-portfolio \
 			my-portfolio=${IMAGE_NAME}:${TAG}
 
-			kubectl rollout status deployment/my-portfolio --timeout=180s
+			kubectl rollout status deployment/my-portfolio --timeout=300s
 			'''
 			}
 		}
