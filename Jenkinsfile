@@ -115,7 +115,7 @@ pipeline {
 			kubectl set image deployment/my-portfolio \
 			my-portfolio=${IMAGE_NAME}:${TAG}
 
-			kubectl rollout status deployment/my-portfolio --timeout=120s
+			kubectl rollout status deployment/my-portfolio --timeout=180s
 			'''
 			}
 		}
@@ -136,7 +136,7 @@ pipeline {
 		always {
 		sh """
 		docker image rm ${IMAGE_NAME}:${TAG} || true
-		docker image rm ${IMAGE_NAME}:latest || true
+		docker image rm ${IMAGE_NAME}:latest --force || true
 		"""
 		echo '🧹 Pipeline finished.'
 		}
